@@ -7,7 +7,6 @@ from importlib import import_module
 links = (
     Link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css", type="text/css"),
     *HighlightJS(langs=['python', 'javascript', 'html', 'css']),
-    MarkdownJS(),
     Script(defer=True, data_domain="fasthtml.gallery", src="https://plausible-analytics-ce-production-9521.up.railway.app/js/script.js"),
 )
 
@@ -49,7 +48,7 @@ def create_display_page(dir_path, module_path):
         return (
             Title(f"FastHTML Gallery - {str(Path(dir_path).name).replace('_', ' ').title()}"),
             Div(
-                *links,
+                *tuple(links if MarkdownJS() in getattr(_app_module,'hdrs',[]) else links + (MarkdownJS(),)),
                 Div(
                     A("Back to Gallery",  href="/", style="margin-bottom: 20px;", cls="btn btn-primary"),
                     cls="d-flex align-items-center justify-content-between"
