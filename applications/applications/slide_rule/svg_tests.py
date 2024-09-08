@@ -29,13 +29,16 @@ def homepage():
     global be_count
     be_count = -1
     return Div(
+        mk_oob_innerSVG_button(0),
         Svg(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 150 100", id="svg-box")(
             G(id="ex-innerSVG",  hx_ext="svg-ext", hx_swap="innerSVG",  hx_target="#ex-innerSVG",  hx_get="/innerSVG",hx_trigger="click")(innerSVG()),
             G(id="ex-beforeEnd", hx_ext="svg-ext", hx_swap="beforeendSVG", hx_target="#ex-beforeEnd", hx_get="/beforeEnd",hx_trigger="click")(beforeEnd()),
             G(id="ex-outerSVG")(outerSVG("rect")),
             G(id="ex-innerSVG-oob", hx_ext="svg-ext"),
+            G(id="ex-deleteSVG", hx_ext="svg-ext")(Rect(x=40, y=5, width=10, height=10, fill="blue")(
+                hx_swap="deleteSVG", hx_target="#ex-deleteSVG",hx_trigger="click", hx_get="/deleteSVG"
+            ))
         ),
-        mk_oob_innerSVG_button(0)
     )
 
 @rt("/innerSVG")
@@ -59,4 +62,9 @@ def mk_oob_innerSVG_button(count: int):
 @rt("/oob/innerSVG/{count}")
 def get(count: int):
     return mk_oob_innerSVG_button(count+1),oobinnerSVG()(hx_ext="svg-ext", hx_target="#ex-innerSVG-oob",hx_swap_oob="innerSVG:#ex-innerSVG-oob")
+
+@rt("/deleteSVG")
+def get():
+    return Rect(x=40, y=5, width=10, height=10, fill="blue")
+
 serve()

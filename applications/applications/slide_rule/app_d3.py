@@ -15,7 +15,7 @@ tick_style = {
     "small": {"length": 1, "size": .1, "color": "black", "label": False, "label_color": "black", "label_size": "1"},
 }
 
-hdrs = [Script(src="svg_ext.js"),Script(src="https://d3js.org/d3.v7.min.js")]
+hdrs = [Script(src="drag.js"),Script(src="https://raw.githubusercontent.com/Fflath/svg-ext/main/svg_ext.js"),Script(src="https://d3js.org/d3.v7.min.js")]
 
 app, rt = fast_app(live=True, hdrs=hdrs)
 
@@ -205,9 +205,15 @@ def get_function(value: str):
                     integer_line(**setting_map["top-arm-lines"])(hx_target="#top-arm-lines",hx_swap="innerSVG",hx_swap_oob="innerSVG:#top-arm-lines",hx_ext="svg-ext"),
                     integer_line(**setting_map["slider-lines-top"])(hx_target="#slider-lines-top",hx_swap="innerSVG",hx_swap_oob="innerSVG:#slider-lines-top",hx_ext="svg-ext"),
             )
-        # case "multiplication":
-        #     return multiplication_line()
-        # case "inverse":
-        #     return inverse_line()
+        case "multiplication":
+            return Div(
+                log_line(**setting_map["top-arm-lines"])(hx_target="#top-arm-lines",hx_swap="innerSVG",hx_swap_oob="innerSVG:#top-arm-lines",hx_ext="svg-ext"),
+                log_line(**setting_map["slider-lines-top"])(hx_target="#slider-lines-top",hx_swap="innerSVG",hx_swap_oob="innerSVG:#slider-lines-top",hx_ext="svg-ext"),
+                )
+        case "inverse":
+            return Div(
+                log_line(**setting_map["top-arm-lines"])(hx_target="#top-arm-lines",hx_swap="innerSVG",hx_swap_oob="innerSVG:#top-arm-lines",hx_ext="svg-ext"),
+                reverse_log_line(**setting_map["slider-lines-top"])(hx_target="#slider-lines-top",hx_swap="innerSVG",hx_swap_oob="innerSVG:#slider-lines-top",hx_ext="svg-ext"),
+                )
 
 serve()

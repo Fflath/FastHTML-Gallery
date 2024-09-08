@@ -15,7 +15,21 @@
                 add_children(newSVGContainer, fragment.firstElementChild);
                 return newSVGContainer;
             }
-            
+            function add_child(target, child) {
+                let newSVG = document.createElementNS("http://www.w3.org/2000/svg", child.tagName.toLowerCase());
+                for (let attr of child.attributes) {
+                    newSVG.setAttributeNS(null, attr.name, attr.value);
+                }
+                target.appendChild(newSVG);
+                
+                // Copy text content if present
+                if (child.childNodes.length > 0) {
+                    for (let node of child.childNodes) {
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            newSVG.appendChild(document.createTextNode(node.textContent));
+                        } else if (node.nodeType === Node.ELEMENT_NODE) {
+                            add_child(newSVG, node);
+            }}}};
             // Check if fragment is not a DocumentFragment and wrap it if necessary
             if (!(fragment instanceof DocumentFragment)) {
                 let tempFragment = document.createDocumentFragment();
@@ -26,16 +40,14 @@
 
             switch(swapStyle){
             case "innerSVG":
-                (function(){
-                    while (target.firstChild) {
-                        target.removeChild(target.firstChild);
-                    }
-                    target.appendChild(newSVGContainer);})();
+                while (target.firstChild) {
+                    target.removeChild(target.firstChild);
+                }
+                target.appendChild(newSVGContainer);
                 break;
             case "outerSVG":
-                (function(){
-                    target.parentNode.replaceChild(newSVGContainer, target);
-                    target.remove()})();
+                target.parentNode.replaceChild(newSVGContainer, target);
+                target.remove()
                 break;
             case "update":
                 for (let attr of fragment.firstElementChild.attributes) {
@@ -43,23 +55,24 @@
                 }
                 break;
             case "beforebeginSVG":
-                (function(){target.parentNode.insertBefore(newSVGContainer, target)})();
+                target.parentNode.insertBefore(newSVGContainer, target)
                 break;
             case "afterbeginSVG":
-                (function(){target.insertBefore(newSVGContainer, target.firstChild)})();
+                target.insertBefore(newSVGContainer, target.firstChild)
                 break;
             case "beforeendSVG":
-                (function(){target.appendChild(newSVGContainer)})();
+                target.appendChild(newSVGContainer)
                 break;
             case "afterendSVG":
-                (function(){target.parentNode.append(newSVGContainer)})();
+                target.parentNode.append(newSVGContainer)
                 break;
             case "deleteSVG":
-                (function(){target.remove()})();
+                target.remove()
                 break;
             }
             htmx.process(document.body)
-            return true}})})();
+            return true
+        }})})();
 
 // htmx.logAll();
 
