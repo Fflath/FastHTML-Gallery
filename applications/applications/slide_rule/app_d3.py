@@ -25,14 +25,6 @@ def homepage():
         Button("Swap",hx_get="/show/default")
     )
 
-@rt("/set/{position}")
-def get(position: str, value: str):
-    lf = line_functions.get(value,None)
-    if lf:
-        return mk_number_line(lf,**setting_map[position])
-    else:
-        return None
-
 @rt("/show/{ruler}")
 def get(ruler: str):
     return mk_scale_swap(ruler)
