@@ -33,14 +33,19 @@ def ticks(fx, min_x, max_x, size, delta_x=1e-6, debug=False):
     x = round(min_x,e-1)
     while x <= max_x:
         # x = round(x,2)
-        y=fx(x)
+        try:
+            y=fx(x)
+        except ZeroDivisionError: 
+            x = delta_x
+            y=fx(x)
+
         p = pos(x)
 
         step_size = 1**e
 
         while (pos(x+step_size) - pos(x)) < 2:
             step_size += step_size
-        if between(x,min_x,max_x): ticks.append(Tick(x=x,y=y, position=p, label=x, style="big"))
+        if (x>=min_x) and (x <= max_x): ticks.append(Tick(x=x,y=y, position=p, label=x, style="big"))
 
         m_step = step_size/10
         mx = x + m_step
@@ -51,13 +56,12 @@ def ticks(fx, min_x, max_x, size, delta_x=1e-6, debug=False):
     return ticks
 
 
-I = Scale(ticks=ticks(lambda x: x, 0, 10, 100), name="I", description="This is the basic number line with ticks spaced evenly on the integers.")
 C = Scale(ticks=ticks(lambda x: np.log10(x), 1, 10, 125), name="C", description="I am a line")
 D = Scale(ticks=ticks(lambda x: np.log10(x), 1, 10, 125), name="D", description="I am a line")
 CF = Scale(ticks=ticks(lambda x: np.log10(x), pi, 10*pi, 125), name="CF", description="I am a line")
 DF = Scale(ticks=ticks(lambda x: np.log10(x), pi, 10*pi, 125), name="CF", description="I am a line")
 
-CI = Scale(ticks=ticks(lambda x: np.log10(x), 1, 10, 125), name="CI", description="I am a line")
+CI = Scale(ticks=ticks(lambda x: np.log10(1/x), 1, 10, 125), name="CI", description="I am a line")
 S = Scale(ticks=ticks(lambda x: np.log10(np.sin(np.deg2rad(x))), 5.74, 90, 125), name="S", description="I am a line")
 S2 = Scale(ticks=ticks(lambda x: np.log10(np.sin(np.deg2rad(x))), 0.57, 5.74, 125), name="S", description="I am a line")
 K = Scale(ticks=ticks(lambda x: np.log10(x**3), 1, 1000, 125), name="K", description="I am a line")
@@ -72,7 +76,7 @@ acuman_600 = {
         {"scale": A, "position": "top-arm-3"},
         {"scale": B, "position": "slider-1"},
         {"scale": S, "position": "slider-2"},
-        {"scale": I, "position": "slider-3"},
+        # {"scale": I, "position": "slider-3"},
         {"scale": CI, "position": "slider-4"},
         {"scale": C, "position": "slider-5"},
         {"scale": D, "position": "bottom-arm-1"},
