@@ -32,18 +32,6 @@ setting_map = {
     "bottom-arm-3": {"y": START_Y + ARM_HEIGHT + SLIDER_HEIGHT + 6.1,"up": False}
 }
 
-placement_map = {
-    "Upper 1": "top-arm-1",
-    "Upper 2": "top-arm-2",
-    "Upper 3": "top-arm-3",
-    "Slider 1": "slider-1",
-    "Slider 2": "slider-2",
-    "Slider 3": "slider-3",
-    "Slider 4": "slider-4",
-    "Lower 1": "bottom-arm-1",
-    "Lower 2": "bottom-arm-2",
-    "Lower 3": "bottom-arm-3"
-}
 
 def mk_number_line(line, placement, x=10, width=WIDTH, up=True):
     y = setting_map[placement]["y"]
