@@ -1,14 +1,8 @@
 from fasthtml.common import *
 from fasthtml.svg import *
 from lines import *
-
+from constants import *
 # Constants
-START_X = 10
-START_Y = 5
-WIDTH = 125
-ARM_HEIGHT = 12
-SLIDER_HEIGHT = 16.5
-BUFFER = 5
 
 tick_style = {
     "big": {"length": 2, "size": .3, "color": "black", "label": True, "label_color": "red", "label_size": "1"},
@@ -37,17 +31,10 @@ def mk_number_line(line, placement, x=10, width=WIDTH, up=True):
     y = setting_map[placement]["y"]
     up = setting_map[placement]["up"]
     d = 1 if up else -1
-
-    return [
-        SvgOob(
-            G(Line(x1=f"{x}", y1=f"{y}", x2=f"{x+width}", y2=f"{y}", stroke="black", stroke_width=".2"),
-            *[mk_tick(y,tick,up,x) for tick in line.ticks]), hx_swap_oob=f"innerHTML:#{placement}"),
-        SvgOob(
-            Text(line.name, x=f"{x - 3.5}", y=f"{y-2.5*d}", fill="black", font_size="1", text_anchor="middle", alignment_baseline="middle", font_family="sans-serif", font_weight="bold"),
-            hx_swap_oob=f"innerHTML:#label-{placement}-l"),
-        SvgOob(
-            Text(line.name, x=f"{x+width+3.5}", y=f"{y-2.5*d}", fill="black", font_size="1", text_anchor="middle", alignment_baseline="middle", font_family="sans-serif", font_weight="normal"),
-            hx_swap_oob=f"innerHTML:#label-{placement}-r")]
+    line=G(Line(x1=f"{x}", y1=f"{y}", x2=f"{x+width}", y2=f"{y}", stroke="black", stroke_width=".2"),*[mk_tick(y,tick,up,x) for tick in line.ticks])
+    l_label=Text(line.name, x=f"{x - 3.5}", y=f"{y-2.5*d}", fill="black", font_size="1", text_anchor="middle", alignment_baseline="middle", font_family="sans-serif", font_weight="bold")
+    r_label=Text(line.name, x=f"{x+width+3.5}", y=f"{y-2.5*d}", fill="black", font_size="1", text_anchor="middle", alignment_baseline="middle", font_family="sans-serif", font_weight="normal")
+    return line, l_label, r_label
 
 def mk_tick(y,tick,up,start_x=5):
     d = 1 if up else -1
@@ -123,16 +110,16 @@ def mk_slider(x=START_X, y=START_Y, width=WIDTH, arm_height=ARM_HEIGHT, slider_h
 
 def mk_indicator(x=START_X, y=START_Y, width=WIDTH, arm_height=ARM_HEIGHT, slider_height=SLIDER_HEIGHT):
     return G(
-        Line(x1=f"{x + width/2+10}", y1=f"{y - 2}", x2=f"{x + width/2+10}", y2=f"{y + 2*arm_height+slider_height+2}", stroke="black", stroke_width=".1"),
+        Line(x1=f"{x + width/2}", y1=f"{y - 2}", x2=f"{x + width/2}", y2=f"{y + 2*arm_height+slider_height+2}", stroke="black", stroke_width=".1"),
         Rect(
-        x=f"{x + width/2}",  # Center the indicator on the slider
+        x=f"{x + width/2-width/20}",  # Center the indicator on the slider
         y=f"{y - 2}",
-        width=f"{20}",
+        width=f"{width/10}",
         height=f"{2*arm_height+slider_height+4}",
         fill="rgba(200, 100, 100, 0.5)",  # Semi-transparent red
     ),id="indicator")
 
-def mk_ruler(x=START_X, y=START_Y, width=WIDTH, arm_height=ARM_HEIGHT, slider_height=SLIDER_HEIGHT, buffer=BUFFER):
+def mk_skeleton(x=START_X, y=START_Y, width=WIDTH, arm_height=ARM_HEIGHT, slider_height=SLIDER_HEIGHT, buffer=BUFFER):
     return G(
         mk_slider(x, y, width, arm_height, slider_height, buffer),
         mk_arms(x, y, width, arm_height, slider_height, buffer),
@@ -140,23 +127,11 @@ def mk_ruler(x=START_X, y=START_Y, width=WIDTH, arm_height=ARM_HEIGHT, slider_he
         id="ruler"
     )
 
-
-def mk_function_dropdowns(options):
-    return Form(Select(name="value", hx_get=f"/function")(
-        Option(f'-- Function --', disabled='', selected='', value=''),
-        *[Option(item,value=item) for item in options], 
-    ))
-
-def mk_placement_dropdowns(p_name, p_val, options):
-    return Form(
-        Select(name="value", hx_get=f"/set/{p_val}", hx_swap="innerSVG", hx_ext="svg-ext", hx_target=f"#{p_val}")(
-        Option(f'-- {p_name} --', disabled='', selected='', value=''),
-        *[Option(name,value=val) for name,val in options.items()], 
-    ))
-
-def mk_scale_swap(ruler_name):
-
-    # return SvgOob(mk_number_line(C,**setting_map["slider-4"]),hx_swap_oob="innerHTML:#slider-4"),SvgOob(mk_number_line(C,**setting_map["slider-1"]),hx_swap_oob="innerHTML:#slider-1")
+def mk_ruler(ruler_name):
     r = ruler_options.get(ruler_name,None)
-    # scales = [mk_number_line(scale["scale"], scale["position"]) for scale in r["scales"]]
-    return [mk_number_line(scale["scale"], scale["position"]) for scale in r["scales"]]
+    return [[SvgOob(line, hx_swap_oob=f"innerHTML:#{scale["position"]}"),
+        SvgOob(l_label, hx_swap_oob=f"innerHTML:#label-{scale["position"]}-l"),
+        SvgOob(r_label, hx_swap_oob=f"innerHTML:#label-{scale["position"]}-r")] 
+        for scale in r["scales"] 
+        for line, l_label, r_label in [mk_number_line(scale["scale"],scale["position"])]]
+
