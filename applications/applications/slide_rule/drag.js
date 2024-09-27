@@ -26,22 +26,3 @@ function add_drag(target) {
         d3.select(this).attr('cursor', 'grab');
     }
 })};
-        
-
-function startDrag(evt) {
-    evt.target.setAttribute('data-dragging', 'true');
-    evt.target.setAttribute('data-x', evt.clientX);
-};
-
-function drag(evt) {
-    var el = evt.target;
-    if (el.getAttribute('data-dragging') !== 'true') return;
-    var dx = evt.clientX - parseFloat(el.getAttribute('data-x'));
-    var newX = parseFloat(el.getAttribute('x')) + dx;
-    el.setAttribute('x', newX);
-    el.setAttribute('data-x', evt.clientX);
-};
-    
-function endDrag(evt) {
-    evt.target.setAttribute('data-dragging', 'false');
-};
