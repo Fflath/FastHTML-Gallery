@@ -128,4 +128,11 @@ default = {
         {"scale": T, "position": "bottom-arm-3"}
     ]
 }
+
 ruler_options = {"default":default, "acuman_600": acuman_600}
+
+# def position2x(ind_x, arm_x, slider_x):
+#     scale_factor = WIDTH/(f(max_x)-f(min_x))
+#     shift_factor = f(min_x)*scale_factor
+
+#     tx = (ind_x - arm_x)
