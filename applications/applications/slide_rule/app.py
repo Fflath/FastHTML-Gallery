@@ -2,6 +2,7 @@ from fasthtml.common import *
 from fasthtml.svg import *
 from lines import *
 from ui import *
+import json
 
 hdrs = [Script(src="drag.js"),Script(src="https://d3js.org/d3.v7.min.js"),]
 
@@ -15,22 +16,22 @@ def homepage():
                   add_drag('#arms');'''),
         Svg(viewBox="0 0 150 100",id="svg-box")(
             mk_skeleton(),
-            mk_skeleton(y=50)(id="zoom")
+            mk_skeleton(y=50,zoom=True)(id="zoom")
         ),
         Button("Swap",hx_get="/show/default"),
         Div(id="mouse-position")("Move your mouse")
 
     )
 
+default_ruler = Ruler(acuman_600)
+
 @rt("/show/{ruler}")
 def get(ruler: str):
-    return mk_ruler(ruler)
+    return default_ruler.mk_ruler()
 
-@rt("/get-mouse-position/{ind_x}/{arm_x}/{slider_x}")
-def get_mouse_position(ind_x:float, arm_x:float, slider_x:float):
-    return Div(P(f"Indicator position: X: {ind_x}"),
-               P(f"Arm position: X: {arm_x}"),
-               P(f"Slider position: X: {slider_x}"), id="mouse-position")
+@rt("/get-mouse-position/{line_json}")
+def get_mouse_position(line_json:str):
+    return default_ruler.mk_zoom(line_json)
 
 
 
