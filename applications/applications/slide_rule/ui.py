@@ -148,4 +148,4 @@ class Ruler:
 
     def mk_zoom(self, zoom_limits): 
         zl = json.loads(zoom_limits)
-        return [mk_number_line(scale["scale"](float(zl[scale["name"]][0]),float(zl[scale["name"]][1])),scale['position'],zoom=True) for scale in self.scales]
+        return [mk_number_line(scale["scale"](float(zl[scale["name"]][0]),float(zl[scale["name"]][1]),zoom=True),scale['position'],zoom=True) for scale in self.scales]

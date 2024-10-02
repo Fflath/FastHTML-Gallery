@@ -41,19 +41,15 @@ function add_drag(target) {
             let leftTick = null;
             let rightTick = null;
             done = false
-            ltp = null
-            rtp = null
             ticks.each(function() {
                 if (done) { return true }
                 const tick = d3.select(this);
                 const tickPosition = tick_position(tick,gp_l)
                 if (leftTick === null && tickPosition >= indP_l) {
                     leftTick = tick;
-                    ltp = tickPosition
                 }
                 if (leftTick !== null && rightTick === null && tickPosition > indP_r) {
                     rightTick = tick;
-                    rtp = tickPosition
                     ret[line.attr("line")] = [leftTick.attr("x"),rightTick.attr("x")]
                     done = true
                 }

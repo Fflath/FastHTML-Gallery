@@ -19,8 +19,7 @@ def homepage():
             mk_skeleton(y=50,zoom=True)(id="zoom")
         ),
         Button("Swap",hx_get="/show/default"),
-        Div(id="mouse-position")("Move your mouse")
-
+        Div(id="mouse-position")
     )
 
 default_ruler = Ruler(acuman_600)

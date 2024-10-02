@@ -17,11 +17,12 @@ def m_e(number):
 def between(value,lower,upper):
     return value > lower and value < upper
 
-def ticks(fx, min_x, max_x, size=WIDTH, label="x",reverse=False):
+def ticks(fx, min_x, max_x, size=WIDTH, label="x",reverse=False,zoom=False):
 
     f = lambda x: np.log10(fx(x))
     scale_factor = size/(f(max_x)-f(min_x))
     shift_factor = f(min_x)*scale_factor
+    scale_zoom = .1 if zoom else 1
     if reverse:
         pos = lambda x: size-f(x)*scale_factor-shift_factor
     else:   
@@ -30,7 +31,7 @@ def ticks(fx, min_x, max_x, size=WIDTH, label="x",reverse=False):
     # big tick loop
     ticks = []
     _,e = m_e(min_x)
-    step_size = 10**e
+    step_size = scale_zoom*10**e
     x = round(min_x,e)
 
     if x < min_x: x += step_size
@@ -53,7 +54,7 @@ def ticks(fx, min_x, max_x, size=WIDTH, label="x",reverse=False):
         p = pos(x)
 
         m,e = m_e(x)
-        step_size = 10**e
+        step_size = scale_zoom*10**e
         if label == "y": m,_=m_e(y)
         if (x>=min_x) and (x <= max_x): ticks.append(Tick(x=x,y=y, position=p, label=m, style="big"))
 
@@ -73,23 +74,23 @@ def ticks(fx, min_x, max_x, size=WIDTH, label="x",reverse=False):
         
     return ticks
 
-def C(xmin=1,xmax=10): return Scale(ticks=ticks(lambda x: x, xmin, xmax), name="C", description="Fundamental scale of all slide rules. Identical to the D scale. They are used together for multiplication and division.")
-def D(xmin=1,xmax=10): return Scale(ticks=ticks(lambda x: x, xmin, xmax), name="D", description="Fundamental scale of all slide rules. Identical to the C scale. They are used together for multiplication and division.")
-def CF(xmin=pi,xmax=10*pi): return Scale(ticks=ticks(lambda x: x, xmin, xmax), name="CF", description="Same as C but with a range of pi to 10pi.")
-def DF(xmin=pi,xmax=10*pi): return Scale(ticks=ticks(lambda x: x, xmin, xmax), name="DF", description="Same as D but with a range of pi to 10pi.")
+def C(xmin=1,xmax=10,zoom=False): return Scale(ticks=ticks(lambda x: x, xmin, xmax,zoom=zoom), name="C", description="Fundamental scale of all slide rules. Identical to the D scale. They are used together for multiplication and division.")
+def D(xmin=1,xmax=10,zoom=False): return Scale(ticks=ticks(lambda x: x, xmin, xmax,zoom=zoom), name="D", description="Fundamental scale of all slide rules. Identical to the C scale. They are used together for multiplication and division.")
+def CF(xmin=pi,xmax=10*pi,zoom=False): return Scale(ticks=ticks(lambda x: x, xmin, xmax,zoom=zoom), name="CF", description="Same as C but with a range of pi to 10pi.")
+def DF(xmin=pi,xmax=10*pi,zoom=False): return Scale(ticks=ticks(lambda x: x, xmin, xmax,zoom=zoom), name="DF", description="Same as D but with a range of pi to 10pi.")
 
-def CI(xmin=1,xmax=10): return Scale(ticks=ticks(lambda x: 1/x, xmin, xmax,reverse=True), name="CI", description="Inverse of C scale. Used to find the reciprocal of a number.")
-def CIF(xmin=pi,xmax=10*pi): return Scale(ticks=ticks(lambda x: 1/x, xmin, xmax,reverse=True), name="CIF", description="I am a line")
+def CI(xmin=1,xmax=10,zoom=False): return Scale(ticks=ticks(lambda x: 1/x, xmin, xmax,reverse=True,zoom=zoom), name="CI", description="Inverse of C scale. Used to find the reciprocal of a number.")
+def CIF(xmin=pi,xmax=10*pi,zoom=False): return Scale(ticks=ticks(lambda x: 1/x, xmin, xmax,reverse=True,zoom=zoom), name="CIF", description="I am a line")
 
-def S(xmin=5.74,xmax=90): return Scale(ticks=ticks(lambda x: np.sin(np.deg2rad(x)), xmin, xmax), name="S", description="I am a line")
-def ST(xmin=0.57,xmax=5.74): return Scale(ticks=ticks(lambda x: np.sin(np.deg2rad(x)), xmin, xmax), name="ST", description="I am a line")
-def T(xmin=5.71,xmax=45): return Scale(ticks=ticks(lambda x: np.tan(np.deg2rad(x)), xmin, xmax), name="T", description="I am a line")
+def S(xmin=5.74,xmax=90,zoom=False): return Scale(ticks=ticks(lambda x: np.sin(np.deg2rad(x)), xmin, xmax,zoom=zoom), name="S", description="I am a line")
+def ST(xmin=0.57,xmax=5.74,zoom=False): return Scale(ticks=ticks(lambda x: np.sin(np.deg2rad(x)), xmin, xmax,zoom=zoom), name="ST", description="I am a line")
+def T(xmin=5.71,xmax=45,zoom=False): return Scale(ticks=ticks(lambda x: np.tan(np.deg2rad(x)), xmin, xmax,zoom=zoom), name="T", description="I am a line")
 
-def K(xmin=1,xmax=1000): return Scale(ticks=ticks(lambda x: x**3, xmin, xmax), name="K", description="I am a line")
-def A(xmin=1,xmax=100): return Scale(ticks=ticks(lambda x: x**2, xmin, xmax), name="A", description="I am a line")
-def B(xmin=1,xmax=100): return Scale(ticks=ticks(lambda x: x**2, xmin, xmax), name="B", description="I am a line")
+def K(xmin=1,xmax=1000,zoom=False): return Scale(ticks=ticks(lambda x: x**3, xmin, xmax,zoom=zoom), name="K", description="I am a line")
+def A(xmin=1,xmax=100,zoom=False): return Scale(ticks=ticks(lambda x: x**2, xmin, xmax,zoom=zoom), name="A", description="I am a line")
+def B(xmin=1,xmax=100,zoom=False): return Scale(ticks=ticks(lambda x: x**2, xmin, xmax,zoom=zoom), name="B", description="I am a line")
 
-def L(xmin=0,xmax=10): return Scale(ticks=ticks(lambda x: 10**x, xmin, xmax), name="L", description="I am a line")
+def L(xmin=0,xmax=10,zoom=False): return Scale(ticks=ticks(lambda x: 10**x, xmin, xmax,zoom=zoom), name="L", description="I am a line")
 
 
 
