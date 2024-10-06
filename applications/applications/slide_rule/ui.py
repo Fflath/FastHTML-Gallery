@@ -6,12 +6,16 @@ import json
 # Constants
 
 tick_style = {
-    "big": {"length": 2, "size": .3, "color": "black", "label": True, "label_color": "red", "label_size": "1"},
-    "medium": {"length": 2, "size": .1, "color": "black", "label": False, "label_color": "black", "label_size": "1"},
-    "small": {"length": 1, "size": .1, "color": "black", "label": False, "label_color": "black", "label_size": "1"},
-    "tiny": {"length": .5, "size": .05, "color": "black", "label": False, "label_color": "black", "label_size": "1"},
-    "none": {"length": 0, "size": 0, "color": "black", "label": False, "label_color": "black", "label_size": "0"},
+    REAL_BIG: {"length": 2, "size": .3, "color": "black", "label": True, "label_color": "black", "label_size": "1.2"},
+    BIG_MEDIUM: {"length": 2, "size": .3, "color": "black", "label": True, "label_color": "black", "label_size": "1"},
+    BIG: {"length": 2, "size": .3, "color": "black", "label": True, "label_color": "black", "label_size": "1"},
+    MEDIUM: {"length": 2, "size": .1, "color": "black", "label": False, "label_color": "black", "label_size": "1"},
+    SMALL: {"length": 1, "size": .1, "color": "black", "label": False, "label_color": "black", "label_size": "1"},
+    TINY: {"length": .5, "size": .05, "color": "black", "label": False, "label_color": "black", "label_size": "1"},
+    NONE: {"length": .5, "size": .05, "color": "black", "label": False, "label_color": "black", "label_size": "1"},
+
 }
+
 
 setting_map = {
     "top-arm-3": {"y": START_Y+ARM_HEIGHT - .1,"up": True},
@@ -36,7 +40,7 @@ def mk_number_line(line, placement, x=10, width=WIDTH, up=True, zoom=False):
     return [
         SvgOob(
             G(Line(x1=f"{x}", y1=f"{y}", x2=f"{x+width}", y2=f"{y}", stroke="black", stroke_width=".2"),
-            *[mk_tick(y,tick,up,x) for tick in line.ticks],id="lines",line=line.name), hx_swap_oob=f"innerHTML:#{zoomlabel}{placement}"),
+            *[mk_tick(y,tick,up,x,zoom=zoom) for tick in line.ticks],id="lines",line=line.name), hx_swap_oob=f"innerHTML:#{zoomlabel}{placement}"),
         SvgOob(
             Text(line.name, x=f"{x - 3.5}", y=f"{y-2.5*d}", fill="black", font_size="1", text_anchor="middle", alignment_baseline="middle", font_family="sans-serif", font_weight="bold"),
             hx_swap_oob=f"innerHTML:#{zoomlabel}label-{placement}-l"),
@@ -44,14 +48,20 @@ def mk_number_line(line, placement, x=10, width=WIDTH, up=True, zoom=False):
             Text(line.name, x=f"{x+width+3.5}", y=f"{y-2.5*d}", fill="black", font_size="1", text_anchor="middle", alignment_baseline="middle", font_family="sans-serif", font_weight="normal"),
             hx_swap_oob=f"innerHTML:#{zoomlabel}label-{placement}-r")]
 
-def mk_tick(y,tick,up,start_x=5):
+def mk_tick(y,tick,up,start_x=5,zoom=False):
+    
     d = 1 if up else -1
+    if not zoom:
+        text_label = f"{tick.label:.0f}"
+    elif round(tick.label,0) == round(tick.label,2): text_label = f"{tick.label:.0f}"    
+    elif round(tick.label,1) == round(tick.label,2): text_label = f"{tick.label:.1f}"
+    else: text_label = f"{tick.label:.2f}"
     return G(x=tick.x,id="tick")(
         Line(x1=f"{start_x+tick.position}", y1=f"{y}", x2=f"{start_x+tick.position}", 
              y2=f"{y-tick_style[tick.style]['length']*d}", 
              stroke=tick_style[tick.style]['color'],
              stroke_width=tick_style[tick.style]['size']),
-        Text(f"{tick.label:.0f}",x=f"{start_x+tick.position}", y=f"{y-(.5+tick_style[tick.style]["length"])*d}", 
+        Text(text_label,x=f"{start_x+tick.position}", y=f"{y-(.5+tick_style[tick.style]["length"])*d}", 
              fill=tick_style[tick.style]["label_color"], 
              font_size=tick_style[tick.style]["label_size"], text_anchor="middle", alignment_baseline="middle", 
              font_family="sans-serif", font_weight="bold") if tick_style[tick.style]["label"] else None

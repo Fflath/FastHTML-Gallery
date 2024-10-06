@@ -18,13 +18,17 @@ def between(value,lower,upper):
     return value > lower and value < upper
 
 def ticks(fx, min_x, max_x, size=WIDTH, label="x",reverse=False,zoom=False):
-
+    if min_x > max_x: 
+        min_x,max_x = max_x,min_x
+    
     f = lambda x: np.log10(fx(x))
     scale_factor = size/(f(max_x)-f(min_x))
     shift_factor = f(min_x)*scale_factor
+
     scale_zoom = .1 if zoom else 1
+    label_zoom = 1 if zoom else 0
     if reverse:
-        pos = lambda x: size-f(x)*scale_factor-shift_factor
+        pos = lambda x: size-(f(x)*scale_factor-shift_factor)
     else:   
         pos = lambda x: f(x)*scale_factor-shift_factor
 
@@ -42,7 +46,7 @@ def ticks(fx, min_x, max_x, size=WIDTH, label="x",reverse=False,zoom=False):
             if mx < min_x or mx > max_x:
                 mx += m_step
                 next
-            style = "small"
+            style = SMALL + label_zoom
             if (mx>=min_x) and (mx <= max_x):ticks.append(Tick(x=mx,y=fx(mx), position=pos(mx), label=x if label=="x" else y, style=style))
             mx += m_step
 
@@ -56,7 +60,7 @@ def ticks(fx, min_x, max_x, size=WIDTH, label="x",reverse=False,zoom=False):
         m,e = m_e(x)
         step_size = scale_zoom*10**e
         if label == "y": m,_=m_e(y)
-        if (x>=min_x) and (x <= max_x): ticks.append(Tick(x=x,y=y, position=p, label=m, style="big"))
+        if (x>=min_x) and (x <= max_x): ticks.append(Tick(x=x,y=y, position=p, label=m, style=BIG + label_zoom))
 
         m_step = step_size/10
         mx = x + m_step
@@ -66,13 +70,57 @@ def ticks(fx, min_x, max_x, size=WIDTH, label="x",reverse=False,zoom=False):
             if mx < min_x or mx > max_x:
                 mx += m_step
                 next
-            if mx >= min_x and c == 5: style = "medium"
-            else: style = "small"
-            if (mx>=min_x) and (mx <= max_x):ticks.append(Tick(x=mx,y=fx(mx), position=pos(mx), label=x if label=="x" else y, style=style))
+            if mx >= min_x and c == 5: style = MEDIUM + label_zoom
+            else: style = SMALL
+            m,e = m_e(mx)
+            if label == "y": m,_=m_e(y)
+
+            if (mx>=min_x) and (mx <= max_x):ticks.append(Tick(x=mx,y=fx(mx), position=pos(mx), label=m, style=style))
             mx += m_step
             c += 1
-        
+    if reverse: ticks.reverse()
     return ticks
+
+def ticks2(fx, min_x, max_x, size=WIDTH, label="x",reverse=False,zoom=False):
+
+    f = lambda x: np.log10(fx(x))
+    scale_factor = size/(f(max_x)-f(min_x))
+    shift_factor = f(min_x)*scale_factor
+    scale_zoom = .1 if zoom else 1
+    label_zoom = 1 if zoom else 0
+    if reverse:
+        pos = lambda x: size-f(x)*scale_factor-shift_factor
+    else:   
+        pos = lambda x: f(x)*scale_factor-shift_factor
+    ticks = []
+
+    def helper(x0, x1, tick_size, step_size):
+        ret = []
+        x=x0
+        while x < x1:
+            y=f(x)
+            p = pos(x)
+            m,e = m_e(x)
+            if label == "y": m,_=m_e(y)
+            if (x >= min_x) and (x <= max_x): 
+                ret.append(Tick(x=x,y=y, position=p, label=m, style=tick_size))
+
+            pxn = pos(x+step_size)
+            if pxn - p > 4: ret += helper(x,x+step_size,tick_size-2,step_size/10)
+            x += step_size
+        return ret
+    
+    _,e = m_e(min_x)
+    step_size = scale_zoom*10**e
+    x = round(min_x,e)
+
+    while x <= max_x:
+        ticks += helper(x,x+step_size,BIG,step_size)
+        x += step_size
+    return ticks
+
+
+
 
 def C(xmin=1,xmax=10,zoom=False): return Scale(ticks=ticks(lambda x: x, xmin, xmax,zoom=zoom), name="C", description="Fundamental scale of all slide rules. Identical to the D scale. They are used together for multiplication and division.")
 def D(xmin=1,xmax=10,zoom=False): return Scale(ticks=ticks(lambda x: x, xmin, xmax,zoom=zoom), name="D", description="Fundamental scale of all slide rules. Identical to the C scale. They are used together for multiplication and division.")
@@ -100,7 +148,9 @@ acuman_600 = {
     "scales": [
         {"scale": K, "position": "top-arm-1", "name": "K"},
         {"scale": A, "position": "top-arm-2", "name": "A"},
-        {"scale": B, "position": "slider-1", "name": "B"},
+        {"scale": CF, "position": "top-arm-3", "name": "CF"},
+        {"scale": DF, "position": "slider-1", "name": "DF"},
+        # {"scale": B, "position": "slider-1", "name": "B"},
         {"scale": S, "position": "slider-2", "name": "S"},
         {"scale": ST, "position": "slider-3", "name": "ST"},
         {"scale": CI, "position": "slider-4", "name": "CI"},
@@ -112,4 +162,3 @@ acuman_600 = {
 }
 
 ruler_options = {"acuman_600": acuman_600}
-

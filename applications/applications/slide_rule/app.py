@@ -13,7 +13,8 @@ def homepage():
     return Div(
         Script('''add_drag('#indicator');
                   add_drag('#slider-group');
-                  add_drag('#arms');'''),
+                  add_drag('#arms');
+                  add_just_drag('#zoom-indicator');'''),
         Svg(viewBox="0 0 150 100",id="svg-box")(
             mk_skeleton(),
             mk_skeleton(y=50,zoom=True)(id="zoom")
@@ -26,12 +27,10 @@ default_ruler = Ruler(acuman_600)
 
 @rt("/show/{ruler}")
 def get(ruler: str):
-    return default_ruler.mk_ruler()
+    return Ruler(acuman_600).mk_ruler()
 
 @rt("/get-mouse-position/{line_json}")
 def get_mouse_position(line_json:str):
-    return default_ruler.mk_zoom(line_json)
-
-
+    return Ruler(acuman_600).mk_zoom(line_json)
 
 serve()
