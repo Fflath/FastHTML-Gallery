@@ -32,7 +32,7 @@ setting_map = {
 }
 
 
-def mk_number_line(line, placement, x=10, width=WIDTH, up=True, zoom=False):
+def mk_number_line(ticks,name, placement, x=10, width=WIDTH, up=True, zoom=False):
     y = setting_map[placement]["y"] + (0 if not zoom else 45)
     up = setting_map[placement]["up"]
     zoomlabel = "zoom-" if zoom else ""
@@ -40,12 +40,12 @@ def mk_number_line(line, placement, x=10, width=WIDTH, up=True, zoom=False):
     return [
         SvgOob(
             G(Line(x1=f"{x}", y1=f"{y}", x2=f"{x+width}", y2=f"{y}", stroke="black", stroke_width=".2"),
-            *[mk_tick(y,tick,up,x,zoom=zoom) for tick in line.ticks],id="lines",line=line.name), hx_swap_oob=f"innerHTML:#{zoomlabel}{placement}"),
+            *[mk_tick(y,tick,up,x,zoom=zoom) for tick in ticks],id="lines",line=name), hx_swap_oob=f"innerHTML:#{zoomlabel}{placement}"),
         SvgOob(
-            Text(line.name, x=f"{x - 3.5}", y=f"{y-2.5*d}", fill="black", font_size="1", text_anchor="middle", alignment_baseline="middle", font_family="sans-serif", font_weight="bold"),
+            Text(name, x=f"{x - 3.5}", y=f"{y-2.5*d}", fill="black", font_size="1", text_anchor="middle", alignment_baseline="middle", font_family="sans-serif", font_weight="bold"),
             hx_swap_oob=f"innerHTML:#{zoomlabel}label-{placement}-l"),
         SvgOob(
-            Text(line.name, x=f"{x+width+3.5}", y=f"{y-2.5*d}", fill="black", font_size="1", text_anchor="middle", alignment_baseline="middle", font_family="sans-serif", font_weight="normal"),
+            Text(name, x=f"{x+width+3.5}", y=f"{y-2.5*d}", fill="black", font_size="1", text_anchor="middle", alignment_baseline="middle", font_family="sans-serif", font_weight="normal"),
             hx_swap_oob=f"innerHTML:#{zoomlabel}label-{placement}-r")]
 
 def mk_tick(y,tick,up,start_x=5,zoom=False):
@@ -154,8 +154,13 @@ class Ruler:
         self.scales = config["scales"]
 
     def mk_ruler(self): 
-        return [mk_number_line(scale["scale"](),scale['position'],zoom=False) for scale in self.scales]
+        return [mk_number_line(scale["scale"]().ticks(),scale["name"],scale["position"],zoom=False) for scale in self.scales]
 
     def mk_zoom(self, zoom_limits): 
         zl = json.loads(zoom_limits)
-        return [mk_number_line(scale["scale"](float(zl[scale["name"]][0]),float(zl[scale["name"]][1]),zoom=True),scale['position'],zoom=True) for scale in self.scales]
+
+        return [mk_number_line(scale["scale"]().zoom(
+            float(zl[scale["name"]][0]),
+            float(zl[scale["name"]][1]),
+            float(zl[scale["name"]][2]),
+            float(zl[scale["name"]][3])),scale["name"],scale['position'],zoom=True) for scale in self.scales]

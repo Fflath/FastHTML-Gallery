@@ -19,7 +19,7 @@ def homepage():
             mk_skeleton(),
             mk_skeleton(y=50,zoom=True)(id="zoom")
         ),
-        Button("Swap",hx_get="/show/default"),
+        Div(hx_get="/show/default",hx_trigger="load"),
         Div(id="mouse-position")
     )
 

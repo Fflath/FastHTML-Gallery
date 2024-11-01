@@ -35,6 +35,10 @@ function add_drag(target) {
             const line = d3.select(this);
             const lg = d3.select(line.node().parentNode.parentNode)
             const [gp_l,gp_r] = group_position(lg)
+            left = indP_l - gp_l
+            right = indP_r - gp_l
+            // ret[line.attr("line")] = [left,right]
+
             const ticks = line.selectAll('#tick');
             let leftTick = null;
             let rightTick = null;
@@ -48,7 +52,7 @@ function add_drag(target) {
                 }
                 if (leftTick !== null && rightTick === null && tickPosition > indP_r) {
                     rightTick = tick;
-                    ret[line.attr("line")] = [leftTick.attr("x"),rightTick.attr("x")]
+                    ret[line.attr("line")] = [left,leftTick.attr("x"),right,rightTick.attr("x")]
                     done = true
                 }
             });
@@ -72,8 +76,6 @@ function tick_position(tick,gp_l) {
     const tickPosition = parseFloat(tline.attr('x1')) + gp_l - 10;
     return tickPosition
 }
-
-
 
 function add_just_drag(target) {
     document.addEventListener('DOMContentLoaded', (event) => {
