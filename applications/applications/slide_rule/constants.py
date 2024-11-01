@@ -13,3 +13,5 @@ MEDIUM = 4
 SMALL = 3
 TINY = 2
 NONE = 1
+
+ZOOM_BIG = 10

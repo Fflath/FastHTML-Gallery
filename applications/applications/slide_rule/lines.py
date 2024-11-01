@@ -63,11 +63,9 @@ class Scale:
         return x1
  
     def ticks(self,xmin=None,xmax=None,zoom=False):
-        if xmin is None: xmin = self.min_x
-        if xmax is None: xmax = self.max_x
-        if xmin > xmax: xmin,xmax = xmax,xmin
         
-            
+        xmin=self.min_x if xmin is None else xmin
+        xmax=self.max_x if xmax is None else xmax
         scale_zoom = .1 if zoom else 1
         label_zoom = 1 if zoom else 0
         # big tick loop
@@ -111,30 +109,57 @@ class Scale:
                 if mx >= xmin and c == 5: style = MEDIUM + label_zoom
                 else: style = SMALL
                 m,e = m_e(mx)
-                if self.label == "y": m,_=m_e(y)
 
                 if (mx>=xmin) and (mx <= xmax):ticks.append(Tick(x=mx,y=self.fx(mx), position=self.pos(mx), label=m, style=style))
                 mx += m_step
                 c += 1
         if self.reverse: ticks.reverse()
-        # self.ticks = ticks
         return ticks
     
     def zoom(self,lx,lguess,rx,rguess):
         xmin = self.invert(lx,lguess)
         xmax = self.invert(rx,rguess)
-        self.set_pos(xmin,xmax)
-        return self.ticks(zoom=True)
-
+        self.set_pos(min(xmin,xmax),max(xmin,xmax))
+        return self.zoom_ticks()
     
+    def zoom_ticks(self):
+        xmin=self.min_x
+        xmax=self.max_x
+        diff = xmax - xmin
+        m,e = m_e(diff)
+        rounder = -1*e
+        x = round(xmin,rounder)
+        step_size = 10**(e-1)
+        ticks = []
+        if x > xmin: x -= 10*step_size
+        while x < xmax:
+            y=self.fx(x)
+            p = self.pos(x)
+            m,e = m_e(x)
+            if (x>=xmin) and (x <= xmax): ticks.append(Tick(x=x,y=y, position=p, label=m, style=ZOOM_BIG))
+            m_step = step_size/10
+            mx = x + m_step
+            x += step_size
+            c = 1
+            while (mx <= x) and (mx <= xmax):
+                if mx >= xmin and c == 5: style = MEDIUM
+                else: style = SMALL
+                m,e = m_e(mx)
+
+                if (mx>=xmin) and (mx <= xmax):ticks.append(Tick(x=mx,y=self.fx(mx), position=self.pos(mx), label=m, style=style))
+                mx += m_step
+                c += 1
+        if self.reverse: ticks.reverse()
+
+        return ticks
 
 def C(): return Scale(fx=lambda x:x, min_x=1,max_x=10, name="C", description="Fundamental scale of all slide rules. Identical to the D scale. They are used together for multiplication and division.")
 def D(): return Scale(fx=lambda x: x, min_x=1,max_x=10, name="D", description="Fundamental scale of all slide rules. Identical to the C scale. They are used together for multiplication and division.")
 def CF(): return Scale(fx=lambda x: x, min_x=pi,max_x=10*pi, name="CF", description="Same as C but with a range of pi to 10pi.")
 def DF(): return Scale(fx=lambda x: x, min_x=pi,max_x=10*pi, name="DF", description="Same as D but with a range of pi to 10pi.")
 
-def CI(): return Scale(fx=lambda x: 1/x, min_x=1,max_x=10, name="CI", description="Inverse of C scale. Used to find the reciprocal of a number.")
-def CIF(): return Scale(fx=lambda x: 1/x, min_x=pi,max_x=10*pi, name="CIF", description="I am a line")
+def CI(): return Scale(fx=lambda x: x, min_x=1,max_x=10, reverse=True,name="CI", description="Inverse of C scale. Used to find the reciprocal of a number.")
+def CIF(): return Scale(fx=lambda x: x, min_x=pi,max_x=10*pi, reverse=True, name="CIF", description="I am a line")
 
 def S(): return Scale(fx=lambda x: np.sin(np.deg2rad(x)), min_x=5.74,max_x=90, name="S", description="I am a line")
 def ST(): return Scale(fx=lambda x: np.sin(np.deg2rad(x)), min_x=0.57,max_x=5.74, name="ST", description="I am a line")

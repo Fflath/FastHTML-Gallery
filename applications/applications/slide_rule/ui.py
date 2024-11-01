@@ -13,7 +13,7 @@ tick_style = {
     SMALL: {"length": 1, "size": .1, "color": "black", "label": False, "label_color": "black", "label_size": "1"},
     TINY: {"length": .5, "size": .05, "color": "black", "label": False, "label_color": "black", "label_size": "1"},
     NONE: {"length": .5, "size": .05, "color": "black", "label": False, "label_color": "black", "label_size": "1"},
-
+    ZOOM_BIG: {"length": 2, "size": .3, "color": "black", "label": True, "label_color": "black", "label_size": "0.5"},
 }
 
 
@@ -49,11 +49,10 @@ def mk_number_line(ticks,name, placement, x=10, width=WIDTH, up=True, zoom=False
             hx_swap_oob=f"innerHTML:#{zoomlabel}label-{placement}-r")]
 
 def mk_tick(y,tick,up,start_x=5,zoom=False):
-    
     d = 1 if up else -1
     if not zoom:
         text_label = f"{tick.label:.0f}"
-    elif round(tick.label,0) == round(tick.label,2): text_label = f"{tick.label:.0f}"    
+    elif round(tick.label,0) == round(tick.label,2): text_label = f"{tick.label:.0f}"
     elif round(tick.label,1) == round(tick.label,2): text_label = f"{tick.label:.1f}"
     else: text_label = f"{tick.label:.2f}"
     return G(x=tick.x,id="tick")(
