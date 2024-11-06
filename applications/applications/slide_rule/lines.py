@@ -191,3 +191,12 @@ acuman_600 = {
 }
 
 ruler_options = {"acuman_600": acuman_600}
+
+# descriptions = {
+#     "C/D" : "The C and D scales are used together for multiplication and division. To multiple two numbers line up the 1 tick mark on the C scale with the first number on the D scale. Find the second number's tick mark on the C with the sliding indicatorThe answer is at the second number's tick mark on the C scale.",
+#     "S/ST" : "The S and ST scales are used together for multiplication and division.",
+#     "T" : "The T scale is used for trigonometry.",
+#     "K" : "The K scale is used for cubing numbers.",
+#     "A/B" : "The A and B scales are used for squaring numbers.",
+#     "L" : "The L scale is used for logarithms."
+# }
